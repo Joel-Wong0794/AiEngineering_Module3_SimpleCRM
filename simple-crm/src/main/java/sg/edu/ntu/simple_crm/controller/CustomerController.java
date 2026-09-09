@@ -1,6 +1,7 @@
 package sg.edu.ntu.simple_crm.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,43 +16,41 @@ import org.springframework.web.bind.annotation.RestController;
 
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
 import sg.edu.ntu.simple_crm.model.Customer;
+import sg.edu.ntu.simple_crm.service.CustomerServiceImpl; // Service injected by SpringBoot ; Method was created in the service layer
 
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
 
-    public CustomerController() {
-        customers.add(new Customer("Bruce", "Banner"));
-        customers.add(new Customer("Peter", "Parker"));
-        customers.add(new Customer("Steve", "Rogers"));
-    }
+    private final CustomerServiceImpl customerService;
 
-    private ArrayList<Customer> customers = new ArrayList<>();
+    /// Dependency injection constructor
+    public CustomerController(CustomerServiceImpl customerService) {
+        this.customerService = customerService;
+    }
 
     // Create
     @PostMapping()
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
-        customers.add(customer);
-        return new ResponseEntity<>(customer, HttpStatus.CREATED);
-
-        // Alternate syntax
-        // return ResponseEntity.status(HttpStatus.CREATED).body(customer);
+        Customer newCustomer = customerService.createCustomer(customer);
+        return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
     }
 
-    // Read
+    // Read (GET ALL)
     @GetMapping()
-    public ResponseEntity<ArrayList<Customer>> getAllCustomers() {
-        return new ResponseEntity<>(customers, HttpStatus.OK);
+    public ResponseEntity<List<Customer>> getAllCustomers() {
+        List<Customer> allCustomers = customerService.getAllCustomers();
+        return new ResponseEntity<>(allCustomers, HttpStatus.OK);
     }
 
-    // GET
+    // READ (GET ONE)
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getCustomer(@PathVariable String id) {
+    public ResponseEntity<Customer> getCustomer(@PathVariable String id) {
         try {
-            int index = getCustomerIndex(id);
-            return new ResponseEntity<>(customers.get(index), HttpStatus.OK);
+            Customer foundCustomer = customerService.getCustomer(id);
+            return new ResponseEntity<>(foundCustomer, HttpStatus.OK);
         } catch (CustomerNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -59,36 +58,22 @@ public class CustomerController {
     @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable String id, @RequestBody Customer customer) {
         try {
-            int index = getCustomerIndex(id);
-            customers.set(index, customer);
-            return new ResponseEntity<>(customer, HttpStatus.OK);
+            Customer updatedCustomer = customerService.updateCustomer(id, customer);
+            return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
         } catch (CustomerNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
     }
 
     // delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<Customer> deleteCustomer(@PathVariable String id) {
+    public ResponseEntity<HttpStatus> deleteCustomer(@PathVariable String id) {
         try {
-            int index = getCustomerIndex(id);
-            return new ResponseEntity<>(customers.remove(index), HttpStatus.OK);
+            customerService.deleteCustomer(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (CustomerNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    // Function that is used repeatedly across different operations to look up
-    // particular IDs
-    private int getCustomerIndex(String id) {
-        for (Customer customer : customers) {
-            if (customer.getId().equals(id)) {
-                return customers.indexOf(customer);
-            }
-        }
-
-        // Not found
-        throw new CustomerNotFoundException(id);
-    }
 }
