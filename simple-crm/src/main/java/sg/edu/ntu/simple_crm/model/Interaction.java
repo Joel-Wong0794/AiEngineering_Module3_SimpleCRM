@@ -14,6 +14,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 // Marks a field as the entity's primary key.
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 // Maps this entity to a specific database table.
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -39,6 +41,13 @@ public class Interaction {
     @Column(name = "remarks")
     // Holds notes describing what happened during the interaction.
     private String remarks;
+
+    // Many interactions can belong to the same customer; the customer is required.
+    @ManyToOne(optional = false)
+    // Stores the related customer's id in interaction.customer_id.
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    // Holds the Customer entity associated with this interaction.
+    private Customer customer;
 
     // Maps this field to the table's "interaction_date" column.
     @Column(name = "interaction_date")
