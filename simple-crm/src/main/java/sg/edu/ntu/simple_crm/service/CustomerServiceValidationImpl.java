@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
 import sg.edu.ntu.simple_crm.model.Customer;
 import sg.edu.ntu.simple_crm.repository.CustomerRepository;
-import sg.edu.ntu.simple_crm.exceptions.InvalidCustomerException;
 
 @Service
 public class CustomerServiceValidationImpl implements CustomerService {
@@ -20,35 +19,34 @@ public class CustomerServiceValidationImpl implements CustomerService {
 
     @Override
     public Customer createCustomer(Customer customer) {
-        return customerRepository.createCustomer(customer);
+        return customerRepository.save(customer);
     }
 
     @Override
-    public Customer getCustomer(String id) {
-        return customerRepository.getCustomer(getCustomerIndex(id));
+    public Customer getCustomer(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
     @Override
     public List<Customer> getAllCustomers() {
-        return customerRepository.getAllCustomers();
+        return customerRepository.findAll();
     }
 
     @Override
-    public Customer updateCustomer(String id, Customer customer) {
-        return customerRepository.updateCustomer(getCustomerIndex(id), customer);
+    public Customer updateCustomer(Long id, Customer customer) {
+        Customer customerToUpdate = getCustomer(id);
+        customerToUpdate.setFirstName(customer.getFirstName());
+        customerToUpdate.setLastName(customer.getLastName());
+        customerToUpdate.setEmail(customer.getEmail());
+        customerToUpdate.setContactNo(customer.getContactNo());
+        customerToUpdate.setJobTitle(customer.getJobTitle());
+        customerToUpdate.setYearOfBirth(customer.getYearOfBirth());
+        return customerRepository.save(customerToUpdate);
     }
 
     @Override
-    public void deleteCustomer(String id) {
-        customerRepository.deleteCustomer(getCustomerIndex(id));
-    }
-
-    private int getCustomerIndex(String id) {
-        for (Customer customer : customerRepository.getAllCustomers()) {
-            if (customer.getId().equals(id)) {
-                return customerRepository.getAllCustomers().indexOf(customer);
-            }
-        }
-        throw new CustomerNotFoundException(id);
+    public void deleteCustomer(Long id) {
+        customerRepository.delete(getCustomer(id));
     }
 }
