@@ -7,15 +7,14 @@ import org.springframework.stereotype.Service;
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
 import sg.edu.ntu.simple_crm.model.Customer;
 import sg.edu.ntu.simple_crm.repository.CustomerRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
-import sg.edu.ntu.simple_crm.service.CustomerService;
+import sg.edu.ntu.simple_crm.exceptions.InvalidCustomerException;
 
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceValidationImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    public CustomerServiceValidationImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 

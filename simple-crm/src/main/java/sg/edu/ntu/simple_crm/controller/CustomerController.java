@@ -1,8 +1,8 @@
 package sg.edu.ntu.simple_crm.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,25 +15,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
+import sg.edu.ntu.simple_crm.exceptions.InvalidCustomerException;
 import sg.edu.ntu.simple_crm.model.Customer;
-import sg.edu.ntu.simple_crm.service.CustomerServiceImpl; // Service injected by SpringBoot ; Method was created in the service layer
+import sg.edu.ntu.simple_crm.service.CustomerService;
 
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
 
-    private final CustomerServiceImpl customerService;
+    private final CustomerService customerService;
 
     /// Dependency injection constructor
-    public CustomerController(CustomerServiceImpl customerService) {
+    public CustomerController(
+            @Qualifier("customerServiceValidationImpl") CustomerService customerService) {
         this.customerService = customerService;
     }
 
     // Create
     @PostMapping()
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
-        Customer newCustomer = customerService.createCustomer(customer);
-        return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
+        try {
+            Customer newCustomer = customerService.createCustomer(customer);
+            return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
+        } catch (InvalidCustomerException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     // Read (GET ALL)
@@ -56,10 +62,14 @@ public class CustomerController {
 
     // update
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable String id, @RequestBody Customer customer) {
+    public ResponseEntity<Customer> updateCustomer(
+            @PathVariable String id,
+            @RequestBody Customer customer) {
         try {
             Customer updatedCustomer = customerService.updateCustomer(id, customer);
             return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+        } catch (InvalidCustomerException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (CustomerNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
