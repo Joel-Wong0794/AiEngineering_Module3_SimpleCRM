@@ -18,4 +18,7 @@ public interface CustomerService {
 
     Interaction addInteractionToCustomer(Long id, Interaction interaction);
 
+    public List<Customer> searchCustomers(String firstName);
+
+    List<Customer> searchCustomersByJobTitle(String jobTitle);
 }

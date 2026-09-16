@@ -62,4 +62,14 @@ public class CustomerServiceValidationImpl implements CustomerService {
         interaction.setCustomer(customer);
         return interactionRepository.save(interaction);
     }
+
+    @Override
+    public List<Customer> searchCustomers(String firstName) {
+        return customerRepository.findByFirstName(firstName);
+    }
+
+    @Override
+    public List<Customer> searchCustomersByJobTitle(String jobTitle) {
+        return customerRepository.findByJobTitleJPQL(jobTitle);
+    }
 }

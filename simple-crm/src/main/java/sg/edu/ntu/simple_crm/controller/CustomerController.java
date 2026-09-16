@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
@@ -59,6 +60,18 @@ public class CustomerController {
         } catch (CustomerNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Customer>> searchCustomers(@RequestParam String firstName) {
+        List<Customer> foundCustomers = customerService.searchCustomers(firstName);
+        return new ResponseEntity<>(foundCustomers, HttpStatus.OK);
+    }
+
+    @GetMapping("/search/job")
+    public ResponseEntity<List<Customer>> searchCustomersByJobTitle(@RequestParam String jobTitle) {
+        List<Customer> foundCustomers = customerService.searchCustomersByJobTitle(jobTitle);
+        return new ResponseEntity<>(foundCustomers, HttpStatus.OK);
     }
 
     // update

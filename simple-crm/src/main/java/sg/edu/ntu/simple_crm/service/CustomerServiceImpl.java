@@ -76,4 +76,14 @@ public class CustomerServiceImpl implements CustomerService {
         // Step 3: Save and return the interaction
         return interactionRepository.save(interaction);
     }
+
+    @Override
+    public List<Customer> searchCustomers(String firstName) {
+        return customerRepository.findByFirstName(firstName);
+    }
+
+    @Override
+    public List<Customer> searchCustomersByJobTitle(String jobTitle) {
+        return customerRepository.findByJobTitleJPQL(jobTitle);
+    }
 }
