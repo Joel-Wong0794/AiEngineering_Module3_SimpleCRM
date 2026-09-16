@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
 import sg.edu.ntu.simple_crm.model.Customer;
 import sg.edu.ntu.simple_crm.model.Interaction;
@@ -31,7 +32,7 @@ public class CustomerController {
 
     // Create
     @PostMapping()
-    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<Customer> createCustomer(@RequestBody @Valid Customer customer) {
         Customer newCustomer = customerService.createCustomer(customer);
         return new ResponseEntity<>(newCustomer, HttpStatus.OK);
     }
