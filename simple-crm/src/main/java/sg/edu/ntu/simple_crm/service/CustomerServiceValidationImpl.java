@@ -6,15 +6,21 @@ import org.springframework.stereotype.Service;
 
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
 import sg.edu.ntu.simple_crm.model.Customer;
+import sg.edu.ntu.simple_crm.model.Interaction;
 import sg.edu.ntu.simple_crm.repository.CustomerRepository;
+import sg.edu.ntu.simple_crm.repository.InteractionRepository;
 
 @Service
 public class CustomerServiceValidationImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final InteractionRepository interactionRepository;
 
-    public CustomerServiceValidationImpl(CustomerRepository customerRepository) {
+    public CustomerServiceValidationImpl(
+            CustomerRepository customerRepository,
+            InteractionRepository interactionRepository) {
         this.customerRepository = customerRepository;
+        this.interactionRepository = interactionRepository;
     }
 
     @Override
@@ -48,5 +54,12 @@ public class CustomerServiceValidationImpl implements CustomerService {
     @Override
     public void deleteCustomer(Long id) {
         customerRepository.delete(getCustomer(id));
+    }
+
+    @Override
+    public Interaction addInteractionToCustomer(Long id, Interaction interaction) {
+        Customer customer = getCustomer(id);
+        interaction.setCustomer(customer);
+        return interactionRepository.save(interaction);
     }
 }

@@ -94,4 +94,12 @@ public class Interaction {
         // Stores the method parameter in this object's interactionDate field.
         this.interactionDate = interactionDate;
     }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
 import sg.edu.ntu.simple_crm.exceptions.InvalidCustomerException;
 import sg.edu.ntu.simple_crm.model.Customer;
+import sg.edu.ntu.simple_crm.model.Interaction;
 import sg.edu.ntu.simple_crm.service.CustomerService;
 
 @RestController
@@ -84,6 +85,15 @@ public class CustomerController {
         } catch (CustomerNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PostMapping("/{id}/interactions")
+    public ResponseEntity<Interaction> addInteractionToCustomer(
+            @PathVariable Long id,
+            @RequestBody Interaction interaction) {
+        Interaction newInteraction = customerService.addInteractionToCustomer(id, interaction);
+
+        return new ResponseEntity<>(newInteraction, HttpStatus.CREATED);
     }
 
 }

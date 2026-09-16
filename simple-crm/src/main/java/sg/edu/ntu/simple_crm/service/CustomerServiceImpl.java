@@ -6,20 +6,24 @@ import org.springframework.stereotype.Service;
 
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
 import sg.edu.ntu.simple_crm.model.Customer;
+import sg.edu.ntu.simple_crm.model.Interaction;
 import sg.edu.ntu.simple_crm.repository.CustomerRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import sg.edu.ntu.simple_crm.repository.InteractionRepository;
 import sg.edu.ntu.simple_crm.service.CustomerService;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
+    private final InteractionRepository interactionRepository;
     private final CustomerRepository customerRepository;
 
     @Autowired
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, InteractionRepository interactionRepository) {
         this.customerRepository = customerRepository;
+        this.interactionRepository = interactionRepository;
     }
 
     @Override
@@ -57,5 +61,19 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
+    }
+
+    @Override
+    public Interaction addInteractionToCustomer(Long id, Interaction interaction) {
+
+        // Step 1: Find the customer
+        Customer selectedCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id));
+
+        // Step 2: Link the customer to interaction
+        interaction.setCustomer(selectedCustomer);
+
+        // Step 3: Save and return the interaction
+        return interactionRepository.save(interaction);
     }
 }

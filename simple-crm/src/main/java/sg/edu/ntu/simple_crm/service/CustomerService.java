@@ -3,6 +3,7 @@ package sg.edu.ntu.simple_crm.service;
 import java.util.List;
 
 import sg.edu.ntu.simple_crm.model.Customer;
+import sg.edu.ntu.simple_crm.model.Interaction;
 
 public interface CustomerService {
     Customer createCustomer(Customer customer);
@@ -14,4 +15,7 @@ public interface CustomerService {
     Customer updateCustomer(Long id, Customer customer);
 
     void deleteCustomer(Long id);
+
+    Interaction addInteractionToCustomer(Long id, Interaction interaction);
+
 }
