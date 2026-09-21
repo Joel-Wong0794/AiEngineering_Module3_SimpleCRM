@@ -64,8 +64,13 @@ public class CustomerServiceValidationImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> searchCustomers(String firstName) {
-        return customerRepository.findByFirstName(firstName);
+    public List<Customer> searchCustomersByFirstName(String firstName) {
+        return customerRepository.findByFirstNameContaining(firstName);
+    }
+
+    @Override
+    public List<Customer> searchCustomersByLastName(String lastName) {
+        return customerRepository.findByLastNameJPQL(lastName);
     }
 
     @Override

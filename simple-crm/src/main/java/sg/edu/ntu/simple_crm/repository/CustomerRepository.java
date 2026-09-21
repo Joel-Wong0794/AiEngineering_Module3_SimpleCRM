@@ -13,6 +13,11 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     // find all customers by firstName
     List<Customer> findByFirstName(String firstName);
 
+    List<Customer> findByFirstNameContaining(String text);
+
+    @Query("SELECT c FROM Customer c WHERE c.lastName = :lastName")
+    List<Customer> findByLastNameJPQL(@Param("lastName") String lastName);
+
     // JPQL-
     @Query("SELECT c FROM Customer c WHERE c.jobTitle = :jobTitle")
     List<Customer> findByJobTitleJPQL(@Param("jobTitle") String jobTitle);

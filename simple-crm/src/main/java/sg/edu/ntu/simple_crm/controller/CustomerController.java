@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
 import sg.edu.ntu.simple_crm.model.Customer;
 import sg.edu.ntu.simple_crm.model.Interaction;
 import sg.edu.ntu.simple_crm.service.CustomerServiceImpl;
@@ -34,7 +33,7 @@ public class CustomerController {
     @PostMapping()
     public ResponseEntity<Customer> createCustomer(@RequestBody @Valid Customer customer) {
         Customer newCustomer = customerService.createCustomer(customer);
-        return new ResponseEntity<>(newCustomer, HttpStatus.OK);
+        return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
     }
 
     // Read (Get All)
@@ -53,9 +52,16 @@ public class CustomerController {
 
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<Customer>> searchCustomers(@RequestParam String firstName) {
-        List<Customer> foundCustomers = customerService.searchCustomers(firstName);
+    @GetMapping("/search/name")
+    public ResponseEntity<List<Customer>> searchCustomersByFirstName(@RequestParam String firstName) {
+        List<Customer> foundCustomers = customerService.searchCustomersByFirstName(firstName);
+        return new ResponseEntity<>(foundCustomers, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/search/lastname")
+    public ResponseEntity<List<Customer>> searchCustomersByLastName(@RequestParam String lastName) {
+        List<Customer> foundCustomers = customerService.searchCustomersByLastName(lastName);
         return new ResponseEntity<>(foundCustomers, HttpStatus.OK);
 
     }

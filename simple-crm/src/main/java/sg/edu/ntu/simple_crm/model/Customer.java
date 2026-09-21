@@ -1,9 +1,5 @@
 package sg.edu.ntu.simple_crm.model;
 
-import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,12 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -42,6 +35,7 @@ public class Customer {
     private String lastName;
 
     @Column(name = "contact_no")
+    @Pattern(regexp = "\\d{8}", message = "Contact number must be exactly 8 digits")
     private String contactNo;
     @Column(name = "job_title")
     private String jobTitle;

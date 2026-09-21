@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-SimpleCrmApplication<simple-crm>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "sg.edu.ntu.simple_crm.SimpleCrmApplication",
+      "projectName": "simple-crm",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

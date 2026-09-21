@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import sg.edu.ntu.simple_crm.exceptions.CustomerNotFoundException;
+import sg.edu.ntu.simple_crm.exceptions.InvalidCustomerIdException;
 import sg.edu.ntu.simple_crm.model.Customer;
 import sg.edu.ntu.simple_crm.model.Interaction;
 import sg.edu.ntu.simple_crm.repository.CustomerRepository;
@@ -33,6 +34,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getCustomer(Long id) {
+        if (id <= 0) {
+            throw new InvalidCustomerIdException(id);
+        }
+
         return customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(id)); // optional method
     }
@@ -78,8 +83,13 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> searchCustomers(String firstName) {
-        return customerRepository.findByFirstName(firstName);
+    public List<Customer> searchCustomersByFirstName(String firstName) {
+        return customerRepository.findByFirstNameContaining(firstName);
+    }
+
+    @Override
+    public List<Customer> searchCustomersByLastName(String lastName) {
+        return customerRepository.findByLastNameJPQL(lastName);
     }
 
     @Override
