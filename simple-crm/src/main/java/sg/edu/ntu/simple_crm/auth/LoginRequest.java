@@ -1,3 +1,4 @@
+// LoginRequest.java
 package sg.edu.ntu.simple_crm.auth;
 
 import lombok.Data;
