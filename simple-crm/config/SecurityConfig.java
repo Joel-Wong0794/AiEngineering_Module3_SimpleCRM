@@ -2,8 +2,6 @@ package sg.edu.ntu.simple_crm.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,67 +22,63 @@ public class SecurityConfig {
 
         private final JwtAuthFilter jwtAuthFilter;
 
+        // Only JwtAuthFilter is injected here.
         public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
                 this.jwtAuthFilter = jwtAuthFilter;
         }
 
         @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
-
-        {
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
                 http
+                                // REST APIs using stateless JWT auth do not need CSRF protection.
+                                // CSRF is designed for browser-based session flows; since we never issue
+                                // a session cookie, there is nothing for a cross-site request to hijack.
                                 .csrf(csrf -> csrf.disable())
+
+                                // Stateless: Spring Security will not create or use sessions.
+                                // Every request must carry a valid JWT token.
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                                // /auth/login is public; everything else needs a valid token
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/auth/login").permitAll()
                                                 .anyRequest().authenticated())
+
+                                // Register JWT filter to run before username/password authentication
                                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
-
         }
 
-        @Bean
-        public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
-                        throws Exception {
-                return configuration.getAuthenticationManager();
-        }
-
-        // Use BCrypt to hash and verify account passwords.
+        // Unchanged from Lesson 4.1
         @Bean
         public PasswordEncoder passwordEncoder() {
                 return new BCryptPasswordEncoder();
         }
 
-        // Register the application accounts in memory.
+        // Unchanged from Lesson 4.1
         @Bean
         public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-                // Standard account with read-only customer access.
                 UserDetails user = User.builder()
                                 .username("user")
                                 .password(passwordEncoder.encode("password"))
                                 .roles("USER")
                                 .build();
 
-                // Manager account with read and update access.
-                UserDetails manager = User.builder()
-                                .username("manager")
-                                .password(passwordEncoder.encode("manager123"))
-                                .roles("MANAGER")
-                                .build();
-
-                // Administrator account with full customer access.
                 UserDetails admin = User.builder()
                                 .username("admin")
                                 .password(passwordEncoder.encode("admin123"))
                                 .roles("ADMIN")
                                 .build();
 
-                // Expose all three accounts to Spring Security.
-                return new InMemoryUserDetailsManager(user, manager, admin);
+                UserDetails manager = User.builder()
+                                .username("manager")
+                                .password(passwordEncoder.encode("manager123"))
+                                .roles("MANAGER")
+                                .build();
 
+                return new InMemoryUserDetailsManager(user, admin, manager);
         }
-
 }
